@@ -1,5 +1,8 @@
 import wx
 import json
+import pandas as pd
+import time
+import os
 from utils.loghelper import set_logger
 
 def get_bold_font(size):
@@ -43,9 +46,21 @@ def edit_config_file(new_config):
         logger.error(e)
         return False
 
-
-import wx
-# import wx.lib.imagebrowser
+def excel_output(parent,data):
+    wildcard = u"Excel 文件 (*.xlsx)|*.xlsx|" \
+               "All files (*.*)|*.*"
+    dlg = wx.FileDialog(parent, message=u'选择保存位置', defaultDir=os.getcwd(),
+                        defaultFile=time.strftime("%Y-%m-%d  %H:%M:%S", time.localtime()) + '.xlsx',
+                        wildcard=wildcard,
+                        style=wx.FD_CHANGE_DIR | wx.FD_SAVE)
+    if dlg.ShowModal() == wx.ID_OK:
+        path = dlg.GetPath()
+        print(path)
+        writer = pd.ExcelWriter(path, mode='w', engine='openpyxl')
+        data.to_excel(writer,sheet_name='导出信息',index=False)
+        writer.save()
+        writer.close()
+        wx.MessageBox('导出完成','提示',wx.OK)
 
 
 class MyNumberValidator(wx.Validator):# 创建验证器子类

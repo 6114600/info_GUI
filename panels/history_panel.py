@@ -1,7 +1,11 @@
+import os
+import time
+
 import wx
-from utils import get_textctrl_bold
+from utils import get_textctrl_bold, excel_output
 from utils.getData import get_data
 from utils.PandasToGrid import PandasToGrid
+
 import wx.adv
 
 
@@ -17,7 +21,7 @@ class HistoryPanel(wx.Panel):
                           wx.DefaultSize)
 
         self.room = room_num
-        grid = wx.grid.Grid(self, -1, wx.Point(0, 0), wx.Size(500, 600),
+        grid = wx.grid.Grid(self, -1, wx.Point(0, 0), wx.Size(850, 500),
                             wx.NO_BORDER | wx.WANTS_CHARS)
         grid.CreateGrid(50, 20)
         self.grid_history = grid
@@ -25,6 +29,11 @@ class HistoryPanel(wx.Panel):
 
         Box = wx.BoxSizer(wx.VERTICAL)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        vbox1 = wx.BoxSizer(wx.VERTICAL)
+        vbox2 = wx.BoxSizer(wx.VERTICAL)
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox3=  wx.BoxSizer(wx.HORIZONTAL)
         now = wx.DateTime.Now()
         self.__dp1 = DatePicker(self, now, wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
         self.__dp2 = DatePicker(self, now, wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
@@ -32,20 +41,38 @@ class HistoryPanel(wx.Panel):
         text1 = get_textctrl_bold(self,'起始日期',12)
         text2 = get_textctrl_bold(self, '终止日期', 12)
         self.button1 = wx.Button(self,wx.ID_ANY,'查询')
+        self.button2 = wx.Button(self,wx.ID_ANY,'导出')
+        self.button3 = wx.Button(self, wx.ID_ANY, '多表导出')
 
+        hbox1.Add(text1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox1.AddSpacer(20)
+        hbox1.Add(self.__dp1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
 
-        self.sizer.Add(text1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        self.sizer.Add(self.__dp1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        self.sizer.AddSpacer(50)
-        self.sizer.Add(text2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        self.sizer.Add(self.__dp2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        self.sizer.AddSpacer(50)
-        self.sizer.Add(self.button1,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        Box.Add(self.sizer,0,wx.ALIGN_CENTER)
+        hbox2.Add(text2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox2.AddSpacer(20)
+        hbox2.Add(self.__dp2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+
+        vbox1.Add(hbox1,0,wx.ALL | wx.ALIGN_CENTER)
+        vbox1.AddSpacer(15)
+        vbox1.Add(hbox2,0,wx.ALL | wx.ALIGN_CENTER)
+
+        vbox2.Add(self.button1,0,wx.ALL | wx.ALIGN_CENTER)
+        vbox2.AddSpacer(5)
+        vbox2.Add(self.button2, 0, wx.ALL | wx.ALIGN_CENTER)
+        vbox2.AddSpacer(5)
+        vbox2.Add(self.button3, 0, wx.ALL | wx.ALIGN_CENTER)
+
+        hbox3.Add(vbox1,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox3.AddSpacer(20)
+        hbox3.Add(vbox2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+
+        Box.Add(hbox3,0,wx.ALIGN_CENTER)
+        Box.AddSpacer(20)
         Box.Add(self.grid_history,0,wx.ALIGN_CENTER)
         wx.Panel.SetSizer(self,Box)
 
         self.Bind(wx.EVT_BUTTON,self.OnSearchClick,self.button1)
+        self.Bind(wx.EVT_BUTTON, self.OnOutputClick, self.button2)
         self.Bind(wx.adv.EVT_DATE_CHANGED,self.OnStartDateChange,self.__dp1)
         self.Bind(wx.adv.EVT_DATE_CHANGED, self.OnEndDateChange, self.__dp2)
 
@@ -65,8 +92,17 @@ class HistoryPanel(wx.Panel):
                                             int(self.end_date[2]))
 
     def OnSearchClick(self,event):
+        #TODO: 日期比较
         assert self.end_date > self.start_date, "起始日期必须早于终止日期"
-        self.data_['日期'] = self.data_.apply()
+        self.data_refresh()
+
+    def OnOutputClick(self,event):
+        self.data_refresh()
+        excel_output(self,self.data_)
+
+    def OnMultiOutputClick(self,event):
+        #TODO: 多表导出
+        pass
 
     def data_refresh(self):
         # TODO: 获得数据

@@ -11,6 +11,7 @@ from panels.login_panel import LoginPanel
 from panels.bill_panel import BillPanel
 from panels.cb_panel import CbPanel
 from panels.setting_panel import SettingPanel
+from panels.all_rooms_panel import AllRoomsPanel
 import time
 
 from six import BytesIO
@@ -20,6 +21,7 @@ ID_History = wx.NewId()
 ID_Bill = wx.NewId()
 ID_Cb = wx.NewId()
 ID_Login = wx.NewId()
+ID_Mode = wx.NewId()
 
 ID_CreateTree = wx.NewId()
 ID_CreateGrid = wx.NewId()
@@ -105,6 +107,9 @@ class PyAUIFrame(wx.Frame):
         self.login = False
         self.l_login = True
 
+        # 实时监控模式
+        self.supervise_mode = False # 0 单间 1 全局
+
         # 树双击事件
         self.main_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnTreeChanged)
 
@@ -125,7 +130,8 @@ class PyAUIFrame(wx.Frame):
         self.cb_panel = CbPanel(self,self)
         # 抄表设置面板
         self.setting_panel = SettingPanel(self,self)
-        # 缴费面板
+        # 总览面板
+        self.allroom_panel = AllRoomsPanel(self,self)
 
 
         # create menu
@@ -255,6 +261,11 @@ class PyAUIFrame(wx.Frame):
         # tb4.AddTool(ID_Bill, "统计分析", tb4_bmp1)
         tb4.AddTool(ID_Bill, "缴费明细", tb4_bmp1)
         tb4.AddTool(ID_Cb, "抄表中心", tb4_bmp1)
+        tb4.AddSeparator()
+        # self.combo = wx.ComboBox(tb4,-1,value='单间模式',choices=['单间模式','总览模式'],style=wx.CB_READONLY)
+        # self.Bind(wx.EVT_COMBOBOX,self.OnModeChange,self.combo)
+        # tb4.AddControl(self.combo,label='实时监控模式')
+        tb4.AddCheckTool(ID_Mode,'单间模式',tb4_bmp1)
         tb4.Realize()
 
         # tb5 = wx.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize,
@@ -319,6 +330,9 @@ class PyAUIFrame(wx.Frame):
         self._mgr.AddPane(self.cb_panel, aui.AuiPaneInfo().Name("Cb Panel").
                           CenterPane().Hide())
 
+        self._mgr.AddPane(self.allroom_panel, aui.AuiPaneInfo().Name("Allroom Panel").
+                          CenterPane().Hide())
+
         self._mgr.AddPane(self.setting_panel, aui.AuiPaneInfo().Name("Setting Panel").
                           Float().FloatingSize(500,300).CloseButton(True).Hide())
 
@@ -336,7 +350,7 @@ class PyAUIFrame(wx.Frame):
         # self._mgr.GetPane("main_tree").Show().Left().Layer(0).Row(0).Position(0)
         self._mgr.GetPane("Login Panel").Show()
         self._mgr.Update()
-        # self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         # self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
@@ -349,6 +363,7 @@ class PyAUIFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Bill)
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Cb)
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Settings)
+        self.Bind(wx.EVT_MENU, self.OnModeChange,id=ID_Mode)
 
 
         self.Bind(wx.EVT_MENU, self.OnCreateTree, id=ID_CreateTree)
@@ -409,6 +424,7 @@ class PyAUIFrame(wx.Frame):
 
     def OnTimer1(self,event):
         self.checklogin()
+        # print(self.supervise_mode)
 
     def OnTimer2(self,event):
         t = time.strftime("%Y-%m-%d  %H:%M:%S",time.localtime())
@@ -454,9 +470,22 @@ class PyAUIFrame(wx.Frame):
             pass
         else:
             self.room_num = self.main_tree.GetItemText(item)
-            self.room_panel.room_change(self.main_tree.GetItemText(item))
-            self.history_panel.room_change(self.main_tree.GetItemText(item))
+            self.room_panel.room_change(self.room_num)
+            self.history_panel.room_change(self.room_num)
         # print(item,'\n',self.main_tree.GetItemText(item))
+
+    def OnModeChange(self,event):
+        self.supervise_mode = bool(1-self.supervise_mode)
+        if self._mgr.GetPane('Room Panel').IsShown() or self._mgr.GetPane('Allroom Panel').IsShown():
+            if self.supervise_mode:
+                self._mgr.GetPane('Room Panel').Show()
+                self._mgr.GetPane('Allroom Panel').Hide()
+            else:
+                self._mgr.GetPane('Room Panel').Hide()
+                self._mgr.GetPane('Allroom Panel').Show()
+        self._mgr.Update()
+
+
 
     # 面板关闭事件
     def OnPaneClose(self, event):
@@ -654,7 +683,8 @@ class PyAUIFrame(wx.Frame):
     def OnChangeContentPane(self, event):
 
         self._mgr.GetPane("Login Panel").Hide()
-        self._mgr.GetPane("Room Panel").Show(event.GetId() == ID_Supervise)
+        self._mgr.GetPane("Room Panel").Show(event.GetId() == ID_Supervise and self.supervise_mode)
+        self._mgr.GetPane('Allroom Panel').Show(event.GetId() == ID_Supervise and not self.supervise_mode)
         self._mgr.GetPane("History Panel").Show(event.GetId() == ID_History)
         self._mgr.GetPane("Cb Panel").Show(event.GetId() == ID_Cb or event.GetId() == ID_Settings)
         # self._mgr.GetPane("Setting Panel").Show(event.GetId() == ID_Settings)
@@ -747,7 +777,7 @@ class PyAUIFrame(wx.Frame):
 #         self.Bind(wx.EVT_SIZE, self.OnSize)
 #         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
 #
-#
+
 #     def OnPaint(self, event):
 #
 #         dc = wx.PaintDC(self)
@@ -787,9 +817,9 @@ class PyAUIFrame(wx.Frame):
 #             dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*4))
 #
 #
-#     def OnEraseBackground(self, event):
-#         # intentionally empty
-#         pass
+    def OnEraseBackground(self, event):
+        # intentionally empty
+        pass
 #
 #
 #     def OnSize(self, event):

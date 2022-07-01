@@ -51,12 +51,18 @@ class HistoryPanel(wx.Panel):
 
     def OnStartDateChange(self,event):
         date = event.GetDate()
-        self.start_date = date.Format()
+        self.start_date = date.Format().split(' ')[0]
+        self.start_date = self.start_date.split('/')
+        self.start_date = '%d-%02d-%02d'%(int(self.start_date[0]),int(self.start_date[1]),
+                                                int(self.start_date[2]))
+        # print(self.start_date,type(self.start_date))
 
     def OnEndDateChange(self,event):
         date = event.GetDate()
-        self.end_date = date.Format()
-
+        self.end_date = date.Format().split(' ')[0]
+        self.end_date = self.end_date.split('/')
+        self.end_date = '%d-%02d-%02d' % (int(self.end_date[0]), int(self.end_date[1]),
+                                            int(self.end_date[2]))
 
     def OnSearchClick(self,event):
         assert self.end_date > self.start_date, "起始日期必须早于终止日期"

@@ -15,10 +15,11 @@ import time
 
 from six import BytesIO
 
-ID_Grid_Alldata = wx.NewId() #100
+ID_Supervise = wx.NewId() #100
 ID_History = wx.NewId()
 ID_Bill = wx.NewId()
 ID_Cb = wx.NewId()
+ID_Login = wx.NewId()
 
 ID_CreateTree = wx.NewId()
 ID_CreateGrid = wx.NewId()
@@ -79,13 +80,13 @@ def GetMondrianIcon():
 
 class PyAUIFrame(wx.Frame):
 
-    def __init__(self, parent, id=-1, title="", pos=wx.DefaultPosition,
+    def __init__(self, parent, id=-1, title="宿舍水电管理系统", pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE |
                                             wx.SUNKEN_BORDER |
                                             wx.CLIP_CHILDREN):
 
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
-
+        self.Centre()
         # tell FrameManager to manage this frame
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self)
@@ -106,7 +107,10 @@ class PyAUIFrame(wx.Frame):
 
         # 树双击事件
         self.main_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnTreeChanged)
+
+        # 用于面板切换
         self.centre_pane_list = ['Room Panel','History Panel','Login Panel','Cb Panel','Setting Panel']
+        self.centre_pane_id = [ID_Supervise, ID_History, ID_Login, ID_Cb, ID_Settings]
 
         # 创建面板
         # 初始界面&登录界面
@@ -243,13 +247,14 @@ class PyAUIFrame(wx.Frame):
                          wx.TB_FLAT | wx.TB_NODIVIDER | wx.TB_HORZ_TEXT)
         tb4.SetToolBitmapSize(wx.Size(16,16))
         tb4_bmp1 = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
+
         # 与前面的wx.Newid对应，不同的ID在后面绑定了不同的函数
         # tb4_bmp1更改可以更换图标
-        tb4.AddTool(100, "实时监控", tb4_bmp1)
-        tb4.AddTool(101, "历史记录", tb4_bmp1)
-        tb4.AddTool(105, "统计分析", tb4_bmp1)
-        tb4.AddTool(102, "缴费明细", tb4_bmp1)
-        tb4.AddTool(103, "抄表中心", tb4_bmp1)
+        tb4.AddTool(ID_Supervise, "实时监控", tb4_bmp1)
+        tb4.AddTool(ID_History, "历史记录", tb4_bmp1)
+        # tb4.AddTool(ID_Bill, "统计分析", tb4_bmp1)
+        tb4.AddTool(ID_Bill, "缴费明细", tb4_bmp1)
+        tb4.AddTool(ID_Cb, "抄表中心", tb4_bmp1)
         tb4.Realize()
 
         # tb5 = wx.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize,
@@ -298,22 +303,6 @@ class PyAUIFrame(wx.Frame):
                           Name("main_tree").Caption("宿舍楼水电管理系统").MinSize(wx.Size(200,100)).
                           Left().Layer(1).Position(1).CloseButton(True).MaximizeButton(True))
 
-        self._mgr.AddPane(self.CreateSizeReportCtrl(), aui.AuiPaneInfo().
-                          Name("test9").Caption("Min Size 200x100").
-                          BestSize(wx.Size(200,100)).MinSize(wx.Size(200,100)).
-                          Bottom().Layer(1).CloseButton(True).MaximizeButton(True))
-
-        # self._mgr.AddPane(self.CreateTextCtrl(), aui.AuiPaneInfo().
-        #                   Name("test10").Caption("Text Pane").
-        #                   Bottom().Layer(1).Position(1).CloseButton(True).MaximizeButton(True))
-
-        # self._mgr.AddPane(self.CreateSizeReportCtrl(), aui.AuiPaneInfo().
-        #                   Name("test11").Caption("Fixed Pane").
-        #                   Bottom().Layer(1).Position(2).Fixed().CloseButton(True).MaximizeButton(True))
-
-        self._mgr.AddPane(SettingsPanel(self, self), aui.AuiPaneInfo().
-                          Name("settings").Caption("Dock Manager Settings").
-                          Dockable(False).Float().Hide().CloseButton(True).MaximizeButton(True))
 
         self._mgr.AddPane(self.room_panel, aui.AuiPaneInfo().
                           Name("Room Panel").CenterPane().Hide())
@@ -333,122 +322,42 @@ class PyAUIFrame(wx.Frame):
         self._mgr.AddPane(self.setting_panel, aui.AuiPaneInfo().Name("Setting Panel").
                           Float().FloatingSize(500,300).CloseButton(True).Hide())
 
-        # create some center panes
-
-        # self._mgr.AddPane(self.CreateGrid(), aui.AuiPaneInfo().Name("grid_content").
-        #                   CenterPane().Hide())
-
-        # self._mgr.AddPane(self.CreateTreeCtrl(), aui.AuiPaneInfo().Name("tree_content").
-        #                   CenterPane().Hide())
-
-        # self._mgr.AddPane(self.CreateSizeReportCtrl(), aui.AuiPaneInfo().Name("sizereport_content").
-        #                   CenterPane().Hide())
-
-        # self._mgr.AddPane(self.CreateTextCtrl(), aui.AuiPaneInfo().Name("text_content").
-        #                   CenterPane().Hide())
-
-        # self._mgr.AddPane(self.CreateHTMLCtrl(), aui.AuiPaneInfo().Name("main_win_content").
-        #                   CenterPane())
-
-        # add the toolbars to the manager
-
-        # self._mgr.AddPane(tb1, aui.AuiPaneInfo().
-        #                   Name("tb1").Caption("Big Toolbar").
-        #                   ToolbarPane().Top().
-        #                   LeftDockable(False).RightDockable(False))
-        #
-        # self._mgr.AddPane(tb2, aui.AuiPaneInfo().
-        #                   Name("tb2").Caption("Toolbar 2").
-        #                   ToolbarPane().Top().Row(1).
-        #                   LeftDockable(False).RightDockable(False))
-        #
-        # self._mgr.AddPane(tb3, aui.AuiPaneInfo().
-        #                   Name("tb3").Caption("Toolbar 3").
-        #                   ToolbarPane().Top().Row(1).Position(1).
-        #                   LeftDockable(False).RightDockable(False))
-
         self._mgr.AddPane(tb4, aui.AuiPaneInfo().
                           Name("tb4").Caption("Main Function Toolbar").
                           ToolbarPane().Top().Row(1).
                           LeftDockable(False).RightDockable(False))
 
-        # self._mgr.AddPane(tb5, aui.AuiPaneInfo().
-        #                   Name("tbvert").Caption("Sample Vertical Toolbar").
-        #                   ToolbarPane().Left().GripperTop().
-        #                   TopDockable(False).BottomDockable(False))
-
-        # self._mgr.AddPane(wx.Button(self, -1, "Test Button"),
-        #                   aui.AuiPaneInfo().Name("tb5").
-        #                   ToolbarPane().Top().Row(2).Position(1).
-        #                   LeftDockable(False).RightDockable(False))
-
-        # make some default perspectives
-
-        # self._mgr.GetPane("tbvert").Hide()
-
-        # perspective_all = self._mgr.SavePerspective()
-
+        # 对各面板的显示状态进行了设定，注意此处一定要加Update()进行面板刷新
         all_panes = self._mgr.GetAllPanes()
-
-        # for ii in range(len(all_panes)):
-        #     if not all_panes[ii].IsToolbar():
-        #         all_panes[ii].Hide()
-
-        # self._mgr.GetPane("tb1").Hide()
-        # self._mgr.GetPane("tb5").Hide()
-        # self._mgr.GetPane("test8").Show().Left().Layer(0).Row(0).Position(0)
-        # self._mgr.GetPane("test10").Show().Bottom().Layer(0).Row(0).Position(0)
-        # self._mgr.GetPane("main_win_content").Show()
-        # self._mgr.GetPane('Room Panel').Show()
-        # perspective_default = self._mgr.SavePerspective()
-
         for ii in range(len(all_panes)):
             if not all_panes[ii].IsToolbar():
                 all_panes[ii].Hide()
 
-        # self._mgr.GetPane("grid_content").Show()
-        self._mgr.GetPane("main_tree").Show().Left().Layer(0).Row(0).Position(0)
+        # self._mgr.GetPane("main_tree").Show().Left().Layer(0).Row(0).Position(0)
         self._mgr.GetPane("Login Panel").Show()
-
-        # self._mgr.GetPane('Room Panel').Show()
-
-        # perspective_vert = self._mgr.SavePerspective()
-        #
-        # self._perspectives.append(perspective_default)
-        # self._perspectives.append(perspective_all)
-        # self._perspectives.append(perspective_vert)
-
-        # self._mgr.GetPane("tbvert").Hide()
-        # self._mgr.GetPane("grid_content").Hide()
-
-        # "commit" all changes made to FrameManager
         self._mgr.Update()
-
-        # 以上代码段对各面板的显示状态进行了设定，注意此处一定要加Update()进行面板刷新
-
-        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
-        self.Bind(wx.EVT_SIZE, self.OnSize)
+        # self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
+        # self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-
-        # self.Bind(wx.EVT_TOOL,self.test)
 
         # Show How To Use The Closing Panes Event
         self.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
 
-        # 绑定了功能按钮的函数
-        self.Bind(wx.EVT_MENU, self.ToRoomPanel,id=ID_Grid_Alldata)
-        self.Bind(wx.EVT_MENU, self.ToHistoryPanel, id=ID_History)
-        self.Bind(wx.EVT_MENU, self.ToBillPanel, id=ID_Bill)
-        self.Bind(wx.EVT_MENU, self.ToCbPanel, id=ID_Cb)
+        # 功能按钮绑定切换事件
+        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Supervise)
+        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_History)
+        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Bill)
+        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Cb)
+        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Settings)
 
 
         self.Bind(wx.EVT_MENU, self.OnCreateTree, id=ID_CreateTree)
         self.Bind(wx.EVT_MENU, self.OnCreateGrid, id=ID_CreateGrid)
         self.Bind(wx.EVT_MENU, self.OnCreateText, id=ID_CreateText)
         self.Bind(wx.EVT_MENU, self.OnCreateHTML, id=ID_CreateHTML)
-        self.Bind(wx.EVT_MENU, self.OnCreateSizeReport, id=ID_CreateSizeReport)
-        self.Bind(wx.EVT_MENU, self.OnCreatePerspective, id=ID_CreatePerspective)
-        self.Bind(wx.EVT_MENU, self.OnCopyPerspective, id=ID_CopyPerspective)
+        # self.Bind(wx.EVT_MENU, self.OnCreateSizeReport, id=ID_CreateSizeReport)
+        # self.Bind(wx.EVT_MENU, self.OnCreatePerspective, id=ID_CreatePerspective)
+        # self.Bind(wx.EVT_MENU, self.OnCopyPerspective, id=ID_CopyPerspective)
 
         self.Bind(wx.EVT_MENU, self.OnManagerFlag, id=ID_AllowFloating)
         self.Bind(wx.EVT_MENU, self.OnManagerFlag, id=ID_TransparentHint)
@@ -464,11 +373,7 @@ class PyAUIFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnGradient, id=ID_VerticalGradient)
         self.Bind(wx.EVT_MENU, self.OnGradient, id=ID_HorizontalGradient)
         self.Bind(wx.EVT_MENU, self.OnSettings, id=ID_Settings)
-        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_GridContent)
-        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_TreeContent)
-        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_TextContent)
-        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_SizeReportContent)
-        self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_HTMLContent)
+
         self.Bind(wx.EVT_MENU, self.OnExit, id=wx.ID_EXIT)
         self.Bind(wx.EVT_MENU, self.OnAbout, id=ID_About)
 
@@ -485,9 +390,8 @@ class PyAUIFrame(wx.Frame):
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateUI, id=ID_VerticalGradient)
         self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateUI, id=ID_HorizontalGradient)
 
-
-        self.Bind(wx.EVT_MENU_RANGE, self.OnRestorePerspective, id=ID_FirstPerspective,
-                  id2=ID_FirstPerspective+1000)
+        # self.Bind(wx.EVT_MENU_RANGE, self.OnRestorePerspective, id=ID_FirstPerspective,
+        #           id2=ID_FirstPerspective+1000)
 
         self.Show(True)
 
@@ -532,51 +436,10 @@ class PyAUIFrame(wx.Frame):
                 self._mgr.Update()
         self.l_login = self.login
 
-    # 转到房间实时监控界面
-    def ToRoomPanel(self,event):
-        if self.login:
-            for name in self.centre_pane_list:
-                if name != 'Room Panel':
-                    self._mgr.GetPane(name).Hide()
-                else:
-                    self._mgr.GetPane(name).Show()
-            self._mgr.Update()
-
-    # 转到房间历史记录界面
-    def ToHistoryPanel(self,event):
-        if self.login:
-            for name in self.centre_pane_list:
-                if name != 'History Panel':
-                    self._mgr.GetPane(name).Hide()
-                else:
-                    self._mgr.GetPane(name).Show()
-            self._mgr.Update()
-
-    # 转到缴费中心界面
-    def ToBillPanel(self,event):
-        if self.login:
-            for name in self.centre_pane_list:
-                if name != 'Bill Panel':
-                    self._mgr.GetPane(name).Hide()
-                else:
-                    self._mgr.GetPane(name).Show()
-            self._mgr.Update()
-
-    # 转到查表中心界面
-    def ToCbPanel(self,event):
-        if self.login:
-            for name in self.centre_pane_list:
-                if name != 'Cb Panel':
-                    self._mgr.GetPane(name).Hide()
-                else:
-                    self._mgr.GetPane(name).Show()
-            self._mgr.Update()
-
-    # 转到设置面板
     def ToSettingPanel(self,event):
         if self.login:
             for name in self.centre_pane_list:
-                if name != 'Setting Panel':
+                if not name in ['Setting Panel', 'Cb Panel']:
                     self._mgr.GetPane(name).Hide()
                 else:
                     self._mgr.GetPane(name).Show()
@@ -639,21 +502,6 @@ class PyAUIFrame(wx.Frame):
     def GetDockArt(self):
 
         return self._mgr.GetArtProvider()
-
-
-    def DoUpdate(self):
-
-        self._mgr.Update()
-
-
-    def OnEraseBackground(self, event):
-
-        event.Skip()
-
-
-    def OnSize(self, event):
-
-        event.Skip()
 
 
     def OnSettings(self, event):
@@ -754,36 +602,6 @@ class PyAUIFrame(wx.Frame):
         elif eid == ID_NoVenetianFade:
             event.Check((flags & aui.AUI_MGR_NO_VENETIAN_BLINDS_FADE) != 0);
 
-
-    def OnCreatePerspective(self, event):
-
-        dlg = wx.TextEntryDialog(self, "Enter a name for the new perspective:", "AUI Test")
-
-        dlg.SetValue(("Perspective %d")%(len(self._perspectives)+1))
-        if dlg.ShowModal() != wx.ID_OK:
-            return
-
-        if len(self._perspectives) == 0:
-            self._perspectives_menu.AppendSeparator()
-
-        self._perspectives_menu.Append(ID_FirstPerspective + len(self._perspectives), dlg.GetValue())
-        self._perspectives.append(self._mgr.SavePerspective())
-
-
-    def OnCopyPerspective(self, event):
-
-        s = self._mgr.SavePerspective()
-
-        if wx.TheClipboard.Open():
-
-            wx.TheClipboard.SetData(wx.TextDataObject(s))
-            wx.TheClipboard.Close()
-
-    def OnRestorePerspective(self, event):
-
-        self._mgr.LoadPerspective(self._perspectives[event.GetId() - ID_FirstPerspective])
-
-
     def GetStartPosition(self):
 
         self.x = self.x + 20
@@ -825,21 +643,22 @@ class PyAUIFrame(wx.Frame):
         self._mgr.Update()
 
 
-    def OnCreateSizeReport(self, event):
-        self._mgr.AddPane(self.CreateSizeReportCtrl(), aui.AuiPaneInfo().
-                          Caption("Client Size Reporter").
-                          Float().FloatingPosition(self.GetStartPosition()).
-                          CloseButton(True).MaximizeButton(True))
-        self._mgr.Update()
+    # def OnCreateSizeReport(self, event):
+    #     self._mgr.AddPane(self.CreateSizeReportCtrl(), aui.AuiPaneInfo().
+    #                       Caption("Client Size Reporter").
+    #                       Float().FloatingPosition(self.GetStartPosition()).
+    #                       CloseButton(True).MaximizeButton(True))
+    #     self._mgr.Update()
 
 
     def OnChangeContentPane(self, event):
 
-        self._mgr.GetPane("grid_content").Show(event.GetId() == ID_GridContent)
-        self._mgr.GetPane("text_content").Show(event.GetId() == ID_TextContent)
-        self._mgr.GetPane("tree_content").Show(event.GetId() == ID_TreeContent)
-        self._mgr.GetPane("sizereport_content").Show(event.GetId() == ID_SizeReportContent)
-        self._mgr.GetPane("html_content").Show(event.GetId() == ID_HTMLContent)
+        self._mgr.GetPane("Login Panel").Hide()
+        self._mgr.GetPane("Room Panel").Show(event.GetId() == ID_Supervise)
+        self._mgr.GetPane("History Panel").Show(event.GetId() == ID_History)
+        self._mgr.GetPane("Cb Panel").Show(event.GetId() == ID_Cb or event.GetId() == ID_Settings)
+        # self._mgr.GetPane("Setting Panel").Show(event.GetId() == ID_Settings)
+        self._mgr.GetPane("Bill Panel").Show(event.GetId() == ID_Bill)
         self._mgr.Update()
 
 
@@ -872,8 +691,8 @@ class PyAUIFrame(wx.Frame):
 
         imglist = wx.ImageList(16, 16, True, 2)
 
-        imglist.Add(wx.Bitmap(r'D:\资料\研究生\info_GUI\building.png', wx.BITMAP_TYPE_PNG))
-        imglist.Add(wx.Bitmap(r'D:\资料\研究生\info_GUI\house.png',wx.BITMAP_TYPE_PNG))
+        imglist.Add(wx.Bitmap(r'images\building.png', wx.BITMAP_TYPE_PNG))
+        imglist.Add(wx.Bitmap(r'images\house.png',wx.BITMAP_TYPE_PNG))
 
         # imglist.Add(wx.Bitmap(r'D:\资料\研究生\info_GUI\watch.png',wx.BITMAP_TYPE_PNG))
         tree.AssignImageList(imglist)
@@ -891,11 +710,11 @@ class PyAUIFrame(wx.Frame):
         return tree
 
 
-    def CreateSizeReportCtrl(self, width=80, height=80):
-
-        ctrl = SizeReportCtrl(self, -1, wx.DefaultPosition,
-                              wx.Size(width, height), self._mgr)
-        return ctrl
+    # def CreateSizeReportCtrl(self, width=80, height=80):
+    #
+    #     ctrl = SizeReportCtrl(self, -1, wx.DefaultPosition,
+    #                           wx.Size(width, height), self._mgr)
+    #     return ctrl
 
 
     def CreateHTMLCtrl(self):
@@ -915,68 +734,68 @@ class PyAUIFrame(wx.Frame):
 
 
 
-class SizeReportCtrl(wx.Control):
-
-    def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition,
-                 size=wx.DefaultSize, mgr=None):
-
-        wx.Control.__init__(self, parent, id, pos, size, wx.NO_BORDER)
-
-        self._mgr = mgr
-
-        self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_SIZE, self.OnSize)
-        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
-
-
-    def OnPaint(self, event):
-
-        dc = wx.PaintDC(self)
-
-        size = self.GetClientSize()
-        s = ("Size: %d x %d")%(size.x, size.y)
-
-        dc.SetFont(wx.NORMAL_FONT)
-        w, height = dc.GetTextExtent(s)
-        height = height + 3
-        dc.SetBrush(wx.WHITE_BRUSH)
-        dc.SetPen(wx.WHITE_PEN)
-        dc.DrawRectangle(0, 0, size.x, size.y)
-        dc.SetPen(wx.LIGHT_GREY_PEN)
-        dc.DrawLine(0, 0, size.x, size.y)
-        dc.DrawLine(0, size.y, size.x, 0)
-        dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2))
-
-        if self._mgr:
-
-            pi = self._mgr.GetPane(self)
-
-            s = ("Layer: %d")%pi.dock_layer
-            w, h = dc.GetTextExtent(s)
-            dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*1))
-
-            s = ("Dock: %d Row: %d")%(pi.dock_direction, pi.dock_row)
-            w, h = dc.GetTextExtent(s)
-            dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*2))
-
-            s = ("Position: %d")%pi.dock_pos
-            w, h = dc.GetTextExtent(s)
-            dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*3))
-
-            s = ("Proportion: %d")%pi.dock_proportion
-            w, h = dc.GetTextExtent(s)
-            dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*4))
-
-
-    def OnEraseBackground(self, event):
-        # intentionally empty
-        pass
-
-
-    def OnSize(self, event):
-
-        self.Refresh()
-        event.Skip()
+# class SizeReportCtrl(wx.Control):
+#
+#     def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition,
+#                  size=wx.DefaultSize, mgr=None):
+#
+#         wx.Control.__init__(self, parent, id, pos, size, wx.NO_BORDER)
+#
+#         self._mgr = mgr
+#
+#         self.Bind(wx.EVT_PAINT, self.OnPaint)
+#         self.Bind(wx.EVT_SIZE, self.OnSize)
+#         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
+#
+#
+#     def OnPaint(self, event):
+#
+#         dc = wx.PaintDC(self)
+#
+#         size = self.GetClientSize()
+#         s = ("Size: %d x %d")%(size.x, size.y)
+#
+#         dc.SetFont(wx.NORMAL_FONT)
+#         w, height = dc.GetTextExtent(s)
+#         height = height + 3
+#         dc.SetBrush(wx.WHITE_BRUSH)
+#         dc.SetPen(wx.WHITE_PEN)
+#         dc.DrawRectangle(0, 0, size.x, size.y)
+#         dc.SetPen(wx.LIGHT_GREY_PEN)
+#         dc.DrawLine(0, 0, size.x, size.y)
+#         dc.DrawLine(0, size.y, size.x, 0)
+#         dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2))
+#
+#         if self._mgr:
+#
+#             pi = self._mgr.GetPane(self)
+#
+#             s = ("Layer: %d")%pi.dock_layer
+#             w, h = dc.GetTextExtent(s)
+#             dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*1))
+#
+#             s = ("Dock: %d Row: %d")%(pi.dock_direction, pi.dock_row)
+#             w, h = dc.GetTextExtent(s)
+#             dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*2))
+#
+#             s = ("Position: %d")%pi.dock_pos
+#             w, h = dc.GetTextExtent(s)
+#             dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*3))
+#
+#             s = ("Proportion: %d")%pi.dock_proportion
+#             w, h = dc.GetTextExtent(s)
+#             dc.DrawText(s, (size.x-w)/2, ((size.y-(height*5))/2)+(height*4))
+#
+#
+#     def OnEraseBackground(self, event):
+#         # intentionally empty
+#         pass
+#
+#
+#     def OnSize(self, event):
+#
+#         self.Refresh()
+#         event.Skip()
 
 
 ID_PaneBorderSize = wx.ID_HIGHEST + 1

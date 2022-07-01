@@ -37,9 +37,11 @@ def edit_config_file(new_config):
     try:
         with open('config/config.json', 'w') as fp:
             json.dump(new_config,fp,sort_keys=False,ensure_ascii=True)
+        return True
     except Exception as e:
         logger.error('配置文件读取错误，请检查配置文件是否在正确位置。')
         logger.error(e)
+        return False
 
 
 import wx

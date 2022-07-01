@@ -130,5 +130,12 @@ class SettingPanel(wx.Panel):
         config = load_config_file()
         config['dscb'] = str(if_open)
         config['cb_period'] = str(period_code)
-        edit_config_file(config)
+        wx.MessageBox('是否修改配置文件？','提示',style=wx.YES_NO)
+        if edit_config_file(config):
+            wx.MessageBox('成功修改配置文件','提示',style=wx.OK)
+            self.parent._mgr.GetPane('Setting Panel').Hide()
+            self.parent._mgr.GetPane('Cb Panel').Show()
+            self.parent._mgr.Update()
+        else:
+            wx.MessageBox('配置文件修改异常','错误',style=wx.OK)
 

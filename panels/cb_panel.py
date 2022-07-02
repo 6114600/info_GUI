@@ -4,6 +4,10 @@ from utils.getData import get_data
 from utils.PandasToGrid import PandasToGrid
 from utils import load_config_file
 
+# 此面板还需实现的功能
+# 数据库联动
+# 其他按钮功能
+
 class CbPanel(wx.Panel):
     def __init__(self, parent, frame):
 

@@ -1,6 +1,11 @@
 import wx
 from utils import get_textctrl_bold
 
+# 该面板还需实现的功能
+# 与数据库的联动，包括密码验证、身份设定等
+# 账号输入框、密码输入框的输入限制
+
+
 
 class LoginPanel(wx.Panel):
     def __init__(self, parent, frame):
@@ -8,26 +13,30 @@ class LoginPanel(wx.Panel):
         wx.Panel.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition,
                           wx.DefaultSize)
 
+        # 定义布局器Boxsizer
         Box = wx.BoxSizer(wx.VERTICAL)
 
         text1 = get_textctrl_bold(self,'水电信息管理系统',24)
 
+        # 嵌套子布局器1，横向
         h1 = wx.BoxSizer(wx.HORIZONTAL)
         text2 = get_textctrl_bold(self,'账号',18)
-        self.textbox1 = wx.TextCtrl(self,-1,"",size=(200,-1))
+        self.textbox1 = wx.TextCtrl(self,-1,"",size=(200,-1))  # 账号输入框控件
         h1.Add(text2,0,wx.ALL | wx.ALIGN_LEFT)
         h1.AddSpacer(30)
         h1.Add(self.textbox1, 0, wx.ALL | wx.ALIGN_LEFT)
 
+        # 嵌套子布局器2，横向
         h2 = wx.BoxSizer(wx.HORIZONTAL)
         text3 = get_textctrl_bold(self, '密码', 18)
-        self.textbox2 = wx.TextCtrl(self, -1, "", size=(200, -1),style = wx.TE_PASSWORD)
+        self.textbox2 = wx.TextCtrl(self, -1, "", size=(200, -1),style = wx.TE_PASSWORD)  # 密码输入框控件
         h2.Add(text3, 0, wx.ALL | wx.ALIGN_LEFT)
         h2.AddSpacer(30)
         h2.Add(self.textbox2, 0, wx.ALL | wx.ALIGN_LEFT)
 
-        self.button1 = wx.Button(self,-1,'登录',size=(300,60))
+        self.button1 = wx.Button(self,-1,'登录',size=(300,60))  # 登录按钮
 
+        # 将嵌套子布局器添加到总体布局器中
         Box.AddSpacer(30)
         Box.Add(text1, 0, wx.ALL | wx.ALIGN_CENTER)
         Box.AddSpacer(30)
@@ -46,9 +55,12 @@ class LoginPanel(wx.Panel):
     def OnLogin(self,event):
         username = self.textbox1.GetValue()
         pasw = self.textbox2.GetValue()
-        # TODO:通过数据库查询用户信息与密码，得到匹配的正确密码
+        # TODO:通过数据库查询用户信息与密码，根据用户名得到匹配的正确密码与用户身份
+        # TODO: 主面板增设身份标识，根据此处得到的用户身份对其赋值
+        # TODO:添加输入限制，比如限制中文输入等，防止数据库查询失败。
         correct_pasw = '123456'
         if pasw == correct_pasw:
+            # 若登录成功，显示初始提示界面
             self.Box.Clear(True)
             text4 = get_textctrl_bold(self, username+'  您好！', 20)
             # t = time.strftime("%Y-%m-%d  %H:%M:%S", time.localtime())

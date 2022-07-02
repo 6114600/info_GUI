@@ -1,9 +1,13 @@
 import random
-
 import wx
 from utils import get_textctrl_bold
 from utils.getData import get_data,get_status
 import wx.lib.scrolledpanel as scrolled
+
+# 此面板还需实现的功能
+# 添加数据库数据来源
+# 异常的识别、图标的替换
+# 异常的报警提示
 
 class AllRoomsPanel(scrolled.ScrolledPanel):
     def __init__(self, parent, frame,):
@@ -11,9 +15,9 @@ class AllRoomsPanel(scrolled.ScrolledPanel):
                           wx.DefaultSize,)
         self.SetScrollbar(0,1,0,1200)
         self.SetupScrolling()
-        # TODO: 获得数据
         self.parent = parent
         self.SetBackgroundColour(wx.Colour('WHITE'))
+
 
         self.all_image_list = []
         vbox0 = wx.BoxSizer(wx.VERTICAL)

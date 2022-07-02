@@ -1,13 +1,14 @@
 import os
 import time
-
 import wx
 from utils import get_textctrl_bold, excel_output
 from utils.getData import get_data
 from utils.PandasToGrid import PandasToGrid
-
 import wx.adv
 
+# 此面板还需实现的功能
+# 数据库联动
+# 多表导出
 
 class DatePicker( wx.adv.DatePickerCtrl):  #日期选择类
     def __init__(self,parent,dt,style=wx.adv.DP_DEFAULT):
@@ -108,18 +109,18 @@ class HistoryPanel(wx.Panel):
         # TODO: 获得数据
         self.data_ = get_data(self.room)
 
-        # TODO：计算费用
-        price = [0.6, 0.2, 0.1]
-        for name, name_ in zip(['电表读数', '热水表读数', '冷水表读数'], ['电用量', '热水用量', '冷水用量']):
-            e_consumer = [0]
-            for i in range(len(self.data_[name]) - 1):
-                e_consumer.append(self.data_[name][i + 1] - self.data_[name][i])
-            self.data_[name_] = e_consumer
-        temp = []
-        for i in range(len(self.data_['电表读数'])):
-            temp.append(round(
-                self.data_['电用量'][i] * price[0] + self.data_['热水用量'][i] * price[1] + self.data_['电用量'][i] * price[2],2))
-        self.data_['消费'] = temp
+        # # TODO：计算费用
+        # price = [0.6, 0.2, 0.1]
+        # for name, name_ in zip(['电表读数', '热水表读数', '冷水表读数'], ['电用量', '热水用量', '冷水用量']):
+        #     e_consumer = [0]
+        #     for i in range(len(self.data_[name]) - 1):
+        #         e_consumer.append(self.data_[name][i + 1] - self.data_[name][i])
+        #     self.data_[name_] = e_consumer
+        # temp = []
+        # for i in range(len(self.data_['电表读数'])):
+        #     temp.append(round(
+        #         self.data_['电用量'][i] * price[0] + self.data_['热水用量'][i] * price[1] + self.data_['电用量'][i] * price[2],2))
+        # self.data_['消费'] = temp
         PandasToGrid(self.grid_history, self.data_)
         self.grid_history.EnableEditing(False)
         self.grid_history.EnableDragGridSize(False)

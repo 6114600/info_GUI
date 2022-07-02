@@ -16,6 +16,7 @@ import time
 
 from six import BytesIO
 
+# 函数ID号
 ID_Supervise = wx.NewId() #100
 ID_History = wx.NewId()
 ID_Bill = wx.NewId()
@@ -82,12 +83,14 @@ def GetMondrianIcon():
 
 class PyAUIFrame(wx.Frame):
 
-    def __init__(self, parent, id=-1, title="宿舍水电管理系统", pos=wx.DefaultPosition,
+    # 初始化函数
+    def __init__(self, parent, id=-1, title="宿舍水电管理系统", pos=wx.DefaultPosition,  # 标题可在此处修改
                  size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE |
                                             wx.SUNKEN_BORDER |
                                             wx.CLIP_CHILDREN):
 
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
+        # 窗口居中显示
         self.Centre()
         # tell FrameManager to manage this frame
         self._mgr = aui.AuiManager()
@@ -97,10 +100,10 @@ class PyAUIFrame(wx.Frame):
         self.n = 0
         self.x = 0
 
+        # 窗口图标在此修改，替换图片即可
         self.SetIcon(GetMondrianIcon())
 
-
-        # create main tree
+        # 创建右侧树状选择面板
         self.main_tree = self.CreateTreeCtrl()
 
         # 登录状态
@@ -108,7 +111,7 @@ class PyAUIFrame(wx.Frame):
         self.l_login = True
 
         # 实时监控模式
-        self.supervise_mode = False # 0 单间 1 全局
+        self.supervise_mode = False # 1 单间 0 全局
 
         # 树双击事件
         self.main_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnTreeChanged)
@@ -133,10 +136,10 @@ class PyAUIFrame(wx.Frame):
         # 总览面板
         self.allroom_panel = AllRoomsPanel(self,self)
 
-
-        # create menu
+        # 创建菜单栏
         mb = wx.MenuBar()
 
+        # 创建退出选项
         file_menu = wx.Menu()
         file_menu.Append(wx.ID_EXIT, "Exit")
         #
@@ -190,8 +193,8 @@ class PyAUIFrame(wx.Frame):
         #
         self.SetMenuBar(mb)
 
-        self.statusbar = self.CreateStatusBar(2, wx.STB_SIZEGRIP)
-        self.statusbar.SetStatusWidths([-8, -2])
+        self.statusbar = self.CreateStatusBar(2, wx.STB_SIZEGRIP)  # 控制下部状态栏分栏个数
+        self.statusbar.SetStatusWidths([-8, -2])  # 控制下部状态栏比例
         # TODO: 加状态提示
         self.statusbar.SetStatusText("Ready", 0)
         self.statusbar.SetStatusText("Loading...", 1)
@@ -200,6 +203,7 @@ class PyAUIFrame(wx.Frame):
         # see the end up FrameManager::Update() for the test
         # code. For now, just hard code a frame minimum size
 
+        # 设置窗口为固定大小
         self.SetSize((1200, 800))
         self.SetMinSize(wx.Size(1200, 800))
         self.SetMaxSize(wx.Size(1200, 800))
@@ -249,13 +253,17 @@ class PyAUIFrame(wx.Frame):
         # tb3.Realize()
 
         # 创建工具栏 此处用于主要功能按钮
+
+        # 创建工具栏
         tb4 = wx.ToolBar(self, -1, wx.DefaultPosition, wx.DefaultSize,
                          wx.TB_FLAT | wx.TB_NODIVIDER | wx.TB_HORZ_TEXT)
+        # 设置工具栏图标大小
         tb4.SetToolBitmapSize(wx.Size(16,16))
+
+        # 获得工具栏图标，若要更换，可读取其他图片创建wx.Bitmap类进行赋值
         tb4_bmp1 = wx.ArtProvider.GetBitmap(wx.ART_NORMAL_FILE, wx.ART_OTHER, wx.Size(16, 16))
 
         # 与前面的wx.Newid对应，不同的ID在后面绑定了不同的函数
-        # tb4_bmp1更改可以更换图标
         tb4.AddTool(ID_Supervise, "实时监控", tb4_bmp1)
         tb4.AddTool(ID_History, "历史记录", tb4_bmp1)
         # tb4.AddTool(ID_Bill, "统计分析", tb4_bmp1)
@@ -310,6 +318,7 @@ class PyAUIFrame(wx.Frame):
 
         # 将创建的面板添加到aui面板管理器内
 
+        # 将创建的面板（包括工具栏）添加到面板管理器中
         self._mgr.AddPane(self.main_tree, aui.AuiPaneInfo().
                           Name("main_tree").Caption("宿舍楼水电管理系统").MinSize(wx.Size(200,100)).
                           Left().Layer(1).Position(1).CloseButton(True).MaximizeButton(True))
@@ -357,7 +366,8 @@ class PyAUIFrame(wx.Frame):
         # Show How To Use The Closing Panes Event
         self.Bind(aui.EVT_AUI_PANE_CLOSE, self.OnPaneClose)
 
-        # 功能按钮绑定切换事件
+        # 功能按钮绑定切换函数
+        # 此处将不同菜单事件ID传入OnChangeContentPane函数，不同工具栏按钮传入的ID是不同的，以此切换到不同的面板
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Supervise)
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_History)
         self.Bind(wx.EVT_MENU, self.OnChangeContentPane, id=ID_Bill)
@@ -366,6 +376,7 @@ class PyAUIFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnModeChange,id=ID_Mode)
 
 
+        # 以下是其他的一些事件Bind，基本没有用到
         self.Bind(wx.EVT_MENU, self.OnCreateTree, id=ID_CreateTree)
         self.Bind(wx.EVT_MENU, self.OnCreateGrid, id=ID_CreateGrid)
         self.Bind(wx.EVT_MENU, self.OnCreateText, id=ID_CreateText)
@@ -431,6 +442,10 @@ class PyAUIFrame(wx.Frame):
         self.statusbar.SetStatusText(t,1)
 
     # 检测登录状态
+    # 在登录面板中，成功登录后只修改了主窗口中的登录状态，并未实现面板的跳转。跳转在此处实现。
+    # 通过定时器定时检测登录状态，未登录只显示登录面板，登录则显示工具栏和右侧树面板
+    # 通过设置前一登录状态记录self.l_login和当前登录状态self.login，
+    #   每次进行比较，只有在发生变化时进行面板管理器的刷新，避免频繁刷新造成界面闪烁
     def checklogin(self):
         self.login = self.login_panel.login_flag
         if not self.login:
@@ -452,6 +467,9 @@ class PyAUIFrame(wx.Frame):
                 self._mgr.Update()
         self.l_login = self.login
 
+    # 跳转到设置面板
+    # 由于设置面板的跳转在抄表中心面板通过按钮点击而非工具栏触发，因此保留这个函数供按钮调用函数内使用。
+    # 其他面板的跳转由OnChangeContentPane统一完成
     def ToSettingPanel(self,event):
         if self.login:
             for name in self.centre_pane_list:
@@ -462,6 +480,8 @@ class PyAUIFrame(wx.Frame):
             self._mgr.Update()
 
     # 房间变动事件
+    # 当双击右侧树时，触发树变动事件并调用此函数。根据事件返回的树选择项即房间号进行处理。
+    # 调用与房间号相关的Room Panel 和 History Panel的room_change函数。
     def OnTreeChanged(self,event):
         item = event.GetItem()
         self.main_tree.Expand(item)
@@ -474,9 +494,12 @@ class PyAUIFrame(wx.Frame):
             self.history_panel.room_change(self.room_num)
         # print(item,'\n',self.main_tree.GetItemText(item))
 
+    # 模式切换事件
+    # 用于控制实时监控的单间模式和总览模式的切换
     def OnModeChange(self,event):
-        self.supervise_mode = bool(1-self.supervise_mode)
+        self.supervise_mode = bool(1-self.supervise_mode)  # 事件触发，对状态标志取反，切换模式状态
         if self._mgr.GetPane('Room Panel').IsShown() or self._mgr.GetPane('Allroom Panel').IsShown():
+            # 先判断当前是否在实时监控界面
             if self.supervise_mode:
                 self._mgr.GetPane('Room Panel').Show()
                 self._mgr.GetPane('Allroom Panel').Hide()
@@ -485,9 +508,10 @@ class PyAUIFrame(wx.Frame):
                 self._mgr.GetPane('Allroom Panel').Show()
         self._mgr.Update()
 
-
-
     # 面板关闭事件
+    # 目前只有右侧树和设置面板是可关闭的。当这两个面板关闭时触发事件调用此函数。
+    # 对于设置面板，设定关闭后回到抄表中心面板，即让抄表中心面板重新显示。
+    # 对于右侧树面板，关闭时发出提示。这里建议考虑是否设定右侧树面板无法关闭，因为关闭后目前没有入口可重新创建它。
     def OnPaneClose(self, event):
 
         caption = event.GetPane().caption
@@ -505,6 +529,21 @@ class PyAUIFrame(wx.Frame):
             if dlg.ShowModal() in [wx.ID_NO, wx.ID_CANCEL]:
                 event.Veto()
             dlg.Destroy()
+
+    # 面板切换函数
+    def OnChangeContentPane(self, event):
+
+        # Show(True)面板显示，Show(False)面板关闭
+        # 根据事件传入的ID号来判断按下的时哪一个按钮，转到对应面板。
+        self._mgr.GetPane("Login Panel").Hide()
+        # 对于实时监控，额外增加当前模式的判断，转向不同的界面。
+        self._mgr.GetPane("Room Panel").Show(event.GetId() == ID_Supervise and self.supervise_mode)
+        self._mgr.GetPane('Allroom Panel').Show(event.GetId() == ID_Supervise and not self.supervise_mode)
+        self._mgr.GetPane("History Panel").Show(event.GetId() == ID_History)
+        self._mgr.GetPane("Cb Panel").Show(event.GetId() == ID_Cb or event.GetId() == ID_Settings)
+        # self._mgr.GetPane("Setting Panel").Show(event.GetId() == ID_Settings)
+        self._mgr.GetPane("Bill Panel").Show(event.GetId() == ID_Bill)
+        self._mgr.Update()
 
 
     def OnClose(self, event):
@@ -680,18 +719,6 @@ class PyAUIFrame(wx.Frame):
     #     self._mgr.Update()
 
 
-    def OnChangeContentPane(self, event):
-
-        self._mgr.GetPane("Login Panel").Hide()
-        self._mgr.GetPane("Room Panel").Show(event.GetId() == ID_Supervise and self.supervise_mode)
-        self._mgr.GetPane('Allroom Panel').Show(event.GetId() == ID_Supervise and not self.supervise_mode)
-        self._mgr.GetPane("History Panel").Show(event.GetId() == ID_History)
-        self._mgr.GetPane("Cb Panel").Show(event.GetId() == ID_Cb or event.GetId() == ID_Settings)
-        # self._mgr.GetPane("Setting Panel").Show(event.GetId() == ID_Settings)
-        self._mgr.GetPane("Bill Panel").Show(event.GetId() == ID_Bill)
-        self._mgr.Update()
-
-
     def CreateTextCtrl(self):
 
         text = ("This is text box %d")%(self.n + 1)
@@ -827,6 +854,7 @@ class PyAUIFrame(wx.Frame):
 #         self.Refresh()
 #         event.Skip()
 
+# 下面是示例Demo自带的两种Panel，并未用到
 
 ID_PaneBorderSize = wx.ID_HIGHEST + 1
 ID_SashSize = ID_PaneBorderSize + 1

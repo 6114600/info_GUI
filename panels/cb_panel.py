@@ -3,6 +3,7 @@ from utils import get_textctrl_bold
 from utils.getData import get_data
 from utils.PandasToGrid import PandasToGrid
 from utils import load_config_file
+from database.LookUp import LookUp_Helper
 
 # 此面板还需实现的功能
 # 数据库联动
@@ -57,10 +58,10 @@ class CbPanel(wx.Panel):
         self.SetSizer(vbox)
 
         self.Bind(wx.EVT_BUTTON,self.parent.ToSettingPanel,self.button3)
+        self.Bind(wx.EVT_BUTTON,self.OnLJCB,self.button1)
 
     def OnLJCB(self,event):
-        pass
-        # TODO: 服务器立即读取三表数据存入数据库中
+        self.parent._LH.StartLookUp()
 
     def OnCBRZ(self,event):
         pass

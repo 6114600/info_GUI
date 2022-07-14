@@ -1,5 +1,6 @@
 import wx
 from utils import get_textctrl_bold
+from utils.getData import get_login_info
 
 # 该面板还需实现的功能
 # 与数据库的联动，包括密码验证、身份设定等
@@ -13,6 +14,7 @@ class LoginPanel(wx.Panel):
         wx.Panel.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition,
                           wx.DefaultSize)
 
+        self.parent = parent
         # 定义布局器Boxsizer
         Box = wx.BoxSizer(wx.VERTICAL)
 
@@ -53,19 +55,27 @@ class LoginPanel(wx.Panel):
         self.login_flag = False
 
     def OnLogin(self,event):
+        # 获得用户名与密码输入
         username = self.textbox1.GetValue()
         pasw = self.textbox2.GetValue()
-        # TODO:通过数据库查询用户信息与密码，根据用户名得到匹配的正确密码与用户身份
-        # TODO: 主面板增设身份标识，根据此处得到的用户身份对其赋值
-        # TODO:添加输入限制，比如限制中文输入等，防止数据库查询失败。
-        correct_pasw = '123456'
-        if pasw == correct_pasw:
+
+        # 查询是否存在该用户
+        df = get_login_info(username)
+        # sql_text = f"SELECT * from users_info where user='{username}'"
+        # self.parent.cursor.execute(sql_text)
+        # result = self.parent.cursor.fetchall()
+        if len(df)<=0:
+            wx.MessageBox('系统内没有该用户，请输入正确的用户名。','提示')
+            return
+        else:
+            correct_paswd = df['passwd'][0]
+        if pasw == correct_paswd:
             # 若登录成功，显示初始提示界面
             self.Box.Clear(True)
-            text4 = get_textctrl_bold(self, username+'  您好！', 20)
+            text4 = get_textctrl_bold(self, '用户:  '+username+'  您好！', 20)
             # t = time.strftime("%Y-%m-%d  %H:%M:%S", time.localtime())
             # self.text5 = get_textctrl_bold(self, t, 16)
-            text6 = get_textctrl_bold(self, '请选择左侧房间与右上角功能选项以开始使用', 20)
+            text6 = get_textctrl_bold(self, '请选择左侧房间与左上角功能选项以开始使用', 20)
             self.Box.Add(text4, 0, wx.ALL | wx.ALIGN_CENTER)
             self.Box.AddSpacer(20)
             # self.new_box.Add(self.text5, 0, wx.ALL | wx.ALIGN_CENTER)
@@ -73,5 +83,6 @@ class LoginPanel(wx.Panel):
             self.Box.Add(text6, 0, wx.ALL | wx.ALIGN_CENTER)
             self.SetSizer(self.Box)
             self.login_flag = True
+            self.parent.LevelChange(df['level'][0])
         else:
             wx.MessageBox('密码错误，请重试。',caption='错误')

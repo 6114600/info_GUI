@@ -1,1 +1,1 @@
-{"name": "config", "version": "1.0.0", "dscb": "True", "cb_period": "Every_Year_1_1"}
+{"name": "config", "version": "1.0.0", "dscb": "True", "cb_period": "Every_Year_1_1", "db_host":"localhost", "db_user":"root", "db_passwd":"1448856147", "db_name":"water_electri", "db_auth_plugin":"mysql_native_password"}

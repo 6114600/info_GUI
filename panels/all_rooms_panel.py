@@ -18,7 +18,6 @@ class AllRoomsPanel(scrolled.ScrolledPanel):
         self.parent = parent
         self.SetBackgroundColour(wx.Colour('WHITE'))
 
-
         self.all_image_list = []
         vbox0 = wx.BoxSizer(wx.VERTICAL)
         self.Button = wx.Button(self,-1,'查找异常',size=(100,40))

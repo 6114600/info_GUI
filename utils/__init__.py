@@ -5,13 +5,26 @@ import time
 import os
 from utils.loghelper import set_logger
 
+
 def get_bold_font(size):
     return wx.Font(size, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+
+
+def get_light_font(size):
+    return wx.Font(size,wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_LIGHT)
+
 
 def get_textctrl_bold(parent,text,size):
     textcrtl = wx.StaticText(parent,-1,text)
     textcrtl.SetFont(get_bold_font(size))
     return textcrtl
+
+
+def get_textctrl_light(parent,text,size):
+    textcrtl = wx.StaticText(parent, -1, text)
+    textcrtl.SetFont(get_light_font(size))
+    return textcrtl
+
 
 def room_num_format(floor,room):
     if floor > 9:
@@ -25,6 +38,7 @@ def room_num_format(floor,room):
         room_str = '0'+ str(room)
     return floor_str+room_str
 
+
 def load_config_file():
     logger = set_logger('debug','log/test.log')
     try:
@@ -34,6 +48,7 @@ def load_config_file():
     except Exception as e:
         logger.error('配置文件读取错误，请检查配置文件是否在正确位置。')
         logger.error(e)
+
 
 def edit_config_file(new_config):
     logger = set_logger('debug', 'log/test.log')
@@ -45,6 +60,7 @@ def edit_config_file(new_config):
         logger.error('配置文件读取错误，请检查配置文件是否在正确位置。')
         logger.error(e)
         return False
+
 
 def excel_output(parent,data):
     wildcard = u"Excel 文件 (*.xlsx)|*.xlsx|" \

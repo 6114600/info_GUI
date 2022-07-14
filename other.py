@@ -1,9 +1,16 @@
+import json
+
 import cv2
+import psutil
+import mysql.connector
 import pandas as pd
+from sqlalchemy import create_engine
 import numpy as np
 import random
 # import radar
 import datetime
+
+import utils
 from utils import room_num_format
 
 def image_process():
@@ -53,8 +60,64 @@ def _test_data_2():
     print(df)
     df.to_excel('status.xlsx',sheet_name='1')
 
+def get_database():
+    mydb = mysql.connector.connect(host='localhost',user='root',passwd='1448856147',database='water_electri',auth_plugin='mysql_native_password')
+    mycursor = mydb.cursor()
+
+    for floor in range(2,11):
+        for room in range(1,38):
+            room_num = utils.room_num_format(floor,room)
+            sql_text = "CREATE TABLE if not exists Room_{} (Squence int(10) auto_increment primary key," \
+                       "date_time DATETIME DEFAULT NULL," \
+                       "water_h FLOAT(4) DEFAULT NULL," \
+                       "water_c FLOAT(4) DEFAULT NULL," \
+                       "electri FLOAT(4) DEFAULT NULL)".format(room_num)
+            # sql_text = 'drop table Room_{}'.format(room_num)
+            print(sql_text)
+
+            mycursor.execute(sql_text)
+            # for x in mycursor:
+            #     print(x)
+
+def putintodatabase():
+    mydb = mysql.connector.connect(host='localhost', user='root', passwd='1448856147', database='water_electri',
+                                   auth_plugin='mysql_native_password')
+    mycursor = mydb.cursor()
+    for floor in range(2,11):
+        for room in range(1,38):
+            room_num = utils.room_num_format(floor,room)
+            values = [0, 0, 0]
+            # for year in [2015,2018,2020]:
+            #     for month in [2,7,12]:
+            #         for day in [4,15,21]:
+            #             for time in [8,9,10,11]:
+            #                 date_time_str = "%d-%d-%d %02d:01:01"%(int(year),int(month),int(day),int(time))
+            #                 for i in range(3):
+            #                     values[i] += random.randint(500,1000)
+            sql_text = f"INSERT INTO address_config (房间号) values('{room_num}')"
+            mycursor.execute(sql_text)
+    mydb.commit()
+    # engine = create_engine('mysql+mysqlconnector:// root:1448856147@127.0.0.1/water_electri?auth_plugin=mysql_native_password')
+    # df = pd.read_excel('h.xlsx',sheet_name='0201')
+
+    # print(df.head(5))
+    # df.to_sql('0201',engine,index=False,if_exists='append')
 
 if __name__ == '__main__':
     # _test_data_2()
-    image_process()
-    # print(pd.date_range(start=datetime.datetime.strptime('20000101', '%Y%m%d'),end=datetime.datetime.strptime('20100101', '%Y%m%d'), freq='d'))
+    # image_process()
+    # get_database()
+    # with open('config/config.json','r') as f:
+    #     c = json.load(f)
+    #     print(c)
+    # putintodatabase()
+
+    # df = pd.read_excel('h.xlsx','0201')
+    # df = df.sort_index(ascending=False).head(1)
+    # print(df)
+
+    pids = psutil.pids()
+    for pid in pids:
+        p = psutil.Process(pid)
+        if p.name().startswith('backGround'):
+            print(p.name())

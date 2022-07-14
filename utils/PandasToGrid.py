@@ -185,8 +185,20 @@ def PandasToGrid(grid, df):
     Tdata = GridTable(gridDatas)
 
     # 设置标题
-
-    Tdata.colLabels = list(map(lambda x: str(x), df.columns))
+    labels = list(map(lambda x: str(x), df.columns))
+    for i in range(len(labels)):
+        # print(labels[i])
+        if labels[i] == 'Squence':
+            labels[i] = '流水号'
+        elif labels[i] == 'date_time':
+            labels[i] = '记录时间'
+        elif labels[i] == 'water_h':
+            labels[i] = '热水表读数'
+        elif labels[i] == 'water_c':
+            labels[i] = '冷水表读数'
+        elif labels[i] == 'electri':
+            labels[i] = '电表读数'
+    Tdata.colLabels = labels
 
     grid.SetTable(Tdata, True)
 

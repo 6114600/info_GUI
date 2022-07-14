@@ -1,14 +1,14 @@
 import os
 import time
 import wx
+import wx.grid
 from utils import get_textctrl_bold, excel_output
 from utils.getData import get_data
 from utils.PandasToGrid import PandasToGrid
 import wx.adv
 
 # 此面板还需实现的功能
-# 数据库联动
-# 多表导出
+# 多表导出（加弹窗设置：选房间、选表的种类、是否合并）
 
 class DatePicker( wx.adv.DatePickerCtrl):  #日期选择类
     def __init__(self,parent,dt,style=wx.adv.DP_DEFAULT):
@@ -22,53 +22,73 @@ class HistoryPanel(wx.Panel):
                           wx.DefaultSize)
 
         self.room = room_num
-        grid = wx.grid.Grid(self, -1, wx.Point(0, 0), wx.Size(850, 500),
+        hbox0 = wx.BoxSizer(wx.HORIZONTAL)
+        self.text_room = get_textctrl_bold(self, '0201', 24)
+        self.img_room = wx.StaticBitmap(self,-1,wx.Bitmap(20,20))
+        self.img_room.SetBitmap(wx.Bitmap(wx.Image('images/room.png',type=wx.BITMAP_TYPE_PNG)))
+        hbox0.Add(self.img_room,wx.ALIGN_CENTRE)
+        hbox0.AddSpacer(30)
+        hbox0.Add(self.text_room,wx.ALIGN_CENTRE)
+
+        grid = wx.grid.Grid(self, -1, wx.Point(0, 0), wx.Size(500, 600),
                             wx.NO_BORDER | wx.WANTS_CHARS)
         grid.CreateGrid(50, 20)
         self.grid_history = grid
         self.data_refresh()
+        self.grid_history.EnableEditing(False)
+        self.grid_history.EnableDragGridSize(False)
+        self.grid_history.SetDefaultCellAlignment(wx.ALIGN_CENTER, wx.ALIGN_CENTRE)
 
-        Box = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        vbox1 = wx.BoxSizer(wx.VERTICAL)
-        vbox2 = wx.BoxSizer(wx.VERTICAL)
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox3=  wx.BoxSizer(wx.HORIZONTAL)
+        Box = wx.BoxSizer(wx.HORIZONTAL)
+        Box.AddSpacer(30)
+        box_l = wx.BoxSizer(wx.VERTICAL)
+
+        box_l.Add(hbox0,wx.ALIGN_CENTER)
+
+        text3 = get_textctrl_bold(self,'数据种类',12)
+        self.combobox0 = wx.ComboBox(self,-1,value='热水表',choices=['热水表','冷水表','电表'],style=wx.CB_READONLY)
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        hbox.Add(text3,wx.ALL|wx.ALIGN_CENTRE)
+        hbox.AddSpacer(20)
+        hbox.Add(self.combobox0,wx.ALL|wx.ALIGN_CENTRE)
+        box_l.AddSpacer(20)
+        box_l.Add(hbox,wx.ALIGN_CENTRE)
+
         now = wx.DateTime.Now()
         self.__dp1 = DatePicker(self, now, wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
         self.__dp2 = DatePicker(self, now, wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
-
-        text1 = get_textctrl_bold(self,'起始日期',12)
+        self.combobox1 = wx.ComboBox(self,-1,value='0时',choices=[f'{i}时' for i in range(0,24)])
+        self.combobox2 = wx.ComboBox(self,-1,value='0时',choices=[f'{i}时' for i in range(0,24)])
+        text1 = get_textctrl_bold(self, '起始日期', 12)
         text2 = get_textctrl_bold(self, '终止日期', 12)
-        self.button1 = wx.Button(self,wx.ID_ANY,'查询')
-        self.button2 = wx.Button(self,wx.ID_ANY,'导出')
-        self.button3 = wx.Button(self, wx.ID_ANY, '多表导出')
-
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         hbox1.Add(text1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
         hbox1.AddSpacer(20)
         hbox1.Add(self.__dp1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-
-        hbox2.Add(text2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox1.AddSpacer(10)
+        hbox1.Add(self.combobox1,0,wx.ALL|wx.ALIGN_CENTER_VERTICAL)
+        hbox2.Add(text2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
         hbox2.AddSpacer(20)
-        hbox2.Add(self.__dp2,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox2.Add(self.__dp2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        hbox2.AddSpacer(10)
+        hbox2.Add(self.combobox2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
+        box_l.Add(hbox1,wx.ALIGN_CENTRE)
+        box_l.Add(hbox2,wx.ALIGN_CENTRE)
 
-        vbox1.Add(hbox1,0,wx.ALL | wx.ALIGN_CENTER)
-        vbox1.AddSpacer(15)
-        vbox1.Add(hbox2,0,wx.ALL | wx.ALIGN_CENTER)
+        self.button1 = wx.Button(self,wx.ID_ANY,'查询',size=(150,40))
+        self.button2 = wx.Button(self,wx.ID_ANY,'导出',size=(150,40))
+        self.button3 = wx.Button(self, wx.ID_ANY, '多表导出',size=(150,40))
 
-        vbox2.Add(self.button1,0,wx.ALL | wx.ALIGN_CENTER)
-        vbox2.AddSpacer(5)
-        vbox2.Add(self.button2, 0, wx.ALL | wx.ALIGN_CENTER)
-        vbox2.AddSpacer(5)
-        vbox2.Add(self.button3, 0, wx.ALL | wx.ALIGN_CENTER)
+        box_l.AddSpacer(30)
+        box_l.Add(self.button1,0, wx.ALIGN_CENTER)
+        box_l.AddSpacer(15)
+        box_l.Add(self.button2, 0,  wx.ALIGN_CENTER)
+        box_l.AddSpacer(15)
+        box_l.Add(self.button3, 0,  wx.ALIGN_CENTER)
 
-        hbox3.Add(vbox1,0,wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-        hbox3.AddSpacer(20)
-        hbox3.Add(vbox2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL)
-
-        Box.Add(hbox3,0,wx.ALIGN_CENTER)
-        Box.AddSpacer(20)
+        Box.Add(box_l,0,wx.ALIGN_CENTER)
+        Box.AddSpacer(75)
         Box.Add(self.grid_history,0,wx.ALIGN_CENTER)
         wx.Panel.SetSizer(self,Box)
 
@@ -81,21 +101,28 @@ class HistoryPanel(wx.Panel):
         date = event.GetDate()
         self.start_date = date.Format().split(' ')[0]
         self.start_date = self.start_date.split('/')
-        self.start_date = '%d-%02d-%02d'%(int(self.start_date[0]),int(self.start_date[1]),
-                                                int(self.start_date[2]))
+        self.start_date = '%d-%02d-%02d %02d:00:00'%(int(self.start_date[0]),int(self.start_date[1]),
+                                                int(self.start_date[2]),int(self.combobox1.GetValue()[:-1]))
         # print(self.start_date,type(self.start_date))
 
     def OnEndDateChange(self,event):
         date = event.GetDate()
         self.end_date = date.Format().split(' ')[0]
         self.end_date = self.end_date.split('/')
-        self.end_date = '%d-%02d-%02d' % (int(self.end_date[0]), int(self.end_date[1]),
-                                            int(self.end_date[2]))
+        self.end_date = '%d-%02d-%02d %02d:00:00' % (int(self.end_date[0]), int(self.end_date[1]),
+                                            int(self.end_date[2]),int(self.combobox2.GetValue()[:-1]))
 
     def OnSearchClick(self,event):
         #TODO: 日期比较
         assert self.end_date > self.start_date, "起始日期必须早于终止日期"
-        self.data_refresh()
+        table_type = self.combobox0.GetValue()
+        if table_type == '热水表':
+            table_type = 'water_h'
+        elif table_type == '冷水表':
+            table_type = 'water_c'
+        elif table_type == '冷电表':
+            table_type = 'electri'
+        self.data_refresh([self.start_date,self.end_date,table_type])
 
     def OnOutputClick(self,event):
         self.data_refresh()
@@ -105,26 +132,13 @@ class HistoryPanel(wx.Panel):
         #TODO: 多表导出
         pass
 
-    def data_refresh(self):
-        # TODO: 获得数据
-        self.data_ = get_data(self.room)
-
-        # # TODO：计算费用
-        # price = [0.6, 0.2, 0.1]
-        # for name, name_ in zip(['电表读数', '热水表读数', '冷水表读数'], ['电用量', '热水用量', '冷水用量']):
-        #     e_consumer = [0]
-        #     for i in range(len(self.data_[name]) - 1):
-        #         e_consumer.append(self.data_[name][i + 1] - self.data_[name][i])
-        #     self.data_[name_] = e_consumer
-        # temp = []
-        # for i in range(len(self.data_['电表读数'])):
-        #     temp.append(round(
-        #         self.data_['电用量'][i] * price[0] + self.data_['热水用量'][i] * price[1] + self.data_['电用量'][i] * price[2],2))
-        # self.data_['消费'] = temp
+    def data_refresh(self,constrains=None):
+        self.data_ = get_data(self.room,constrains)
+        self.text_room.SetLabel(self.room)
         PandasToGrid(self.grid_history, self.data_)
-        self.grid_history.EnableEditing(False)
-        self.grid_history.EnableDragGridSize(False)
+        self.grid_history.AutoSizeColumns(True)
 
     def room_change(self,num):
         self.room = num
         self.data_refresh()
+

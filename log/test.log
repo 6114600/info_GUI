@@ -1,49 +1,16 @@
-2022-06-30 16:34:44,814 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:34:45,064 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:34:45,064 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:34:55,667 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:34:55,667 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:34:56,060 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:34:56,060 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:34:56,060 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:05,777 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:05,777 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:05,777 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:06,056 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:06,056 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:06,056 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:06,056 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:16,732 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:16,732 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:16,732 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:16,732 - DSJS.py[line:15] - INFO: 开始校时
-2022-06-30 16:35:17,052 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:17,052 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:17,052 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:17,052 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 16:35:17,052 - D:\资料\临时\info_GUI\utils\time.py[line:21] - INFO: 已成功校时
-2022-06-30 17:32:09,061 - D:\资料\临时\info_GUI\utils\__init__.py[line:31] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:32:39,375 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:33:47,189 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:35:51,782 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:36:39,277 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:36:50,460 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:38:00,101 - D:\资料\临时\info_GUI\utils\__init__.py[line:32] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 17:38:00,101 - D:\资料\临时\info_GUI\utils\__init__.py[line:33] - ERROR: Expecting property name enclosed in double quotes: line 6 column 1 (char 99)
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:41] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:41] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:41] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:41] - ERROR: 配置文件读取错误，请检查配置文件是否在正确位置。
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:42] - ERROR: not writable
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:42] - ERROR: not writable
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:42] - ERROR: not writable
-2022-06-30 20:40:53,837 - D:\资料\研究生\info_GUI\utils\__init__.py[line:42] - ERROR: not writable
-2022-06-30 21:27:02,383 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
-2022-06-30 21:27:02,383 - scheduleTest.py[line:27] - INFO: 配置监视线程启动
-2022-06-30 21:27:16,280 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
-2022-06-30 21:27:16,280 - scheduleTest.py[line:27] - INFO: 配置监视线程启动
-2022-06-30 21:28:22,956 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
-2022-06-30 21:28:29,885 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
-2022-06-30 21:28:29,885 - scheduleTest.py[line:27] - INFO: 配置监视线程启动
-2022-06-30 21:28:53,104 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
-2022-06-30 21:29:04,198 - scheduleTest.py[line:24] - INFO: 主要任务线程启动/重启
+2022-07-14 17:09:32,026 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:09:32	已读取水表数据
+2022-07-14 17:09:32,026 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:09:32	已读取水表数据
+2022-07-14 17:09:32,321 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:09:32	已读取电表数据
+2022-07-14 17:09:32,321 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:09:32	已读取电表数据
+2022-07-14 17:10:42,460 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:10:42	已读取水表数据
+2022-07-14 17:10:42,460 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:10:42	已读取水表数据
+2022-07-14 17:10:42,761 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:10:42	已读取电表数据
+2022-07-14 17:10:42,761 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:10:42	已读取电表数据
+2022-07-14 17:42:21,292 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:42:21	已读取水表数据
+2022-07-14 17:42:21,292 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:42:21	已读取水表数据
+2022-07-14 17:42:21,592 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:42:21	已读取电表数据
+2022-07-14 17:42:21,592 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:42:21	已读取电表数据
+2022-07-14 17:44:30,842 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:44:30	已读取水表数据
+2022-07-14 17:44:30,842 - D:\资料\研究生\info_GUI\database\LookUp.py[line:87] - INFO: 2022-07-14 17:44:30	已读取水表数据
+2022-07-14 17:44:31,152 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:44:31	已读取电表数据
+2022-07-14 17:44:31,152 - D:\资料\研究生\info_GUI\database\LookUp.py[line:91] - INFO: 2022-07-14 17:44:31	已读取电表数据
